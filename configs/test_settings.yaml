@@ -1,0 +1,9 @@
+# Test Params
+############################################
+subject: "PLACEHOLDER"
+subject_number: 5
+age: 23
+sex: "female"
+condition: "HCL"
+stimulus_time_duration_pretest: 1.5
+test_reps: 1

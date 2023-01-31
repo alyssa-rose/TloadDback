@@ -615,6 +615,7 @@ class TloadPretest():
         self.letter_training()
         self.display_one_instruction(r"images\pretest\Letters_Digits_Instructions_REMADE.bmp")
         self.learning_loop()
+        self.screen.fill((0, 0, 0))
         self.pretest_loop()
         
         for key in self.file_dict.keys():

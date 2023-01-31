@@ -204,7 +204,7 @@ def main():
         subject_info["stimulus_time_duration"] = pretest_conditions["PRETEST_LCL"][0]
         
     file_dict = initialize_files(subject_info)
-    repetitions = round(16/subject_info["stimulus_time_duration"])
+    repetitions = subject_info["test_reps"]
     SERIES, RESPONSES = make_series_list()
         
     display_instruction(image_path=r"images\test\Instructions_1_REMADE.bmp")

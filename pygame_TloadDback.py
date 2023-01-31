@@ -291,6 +291,7 @@ class TloadTest():
                         response_key = "1"
                         time.sleep(self.subject_info["stimulus_time_duration"]+START_TIME-secs)
                         self.screen.fill((0, 0, 0))
+                        self.render_centered_text('')
                         break  # finishing the loop
                     else:
                         response_key = "0"
@@ -299,7 +300,7 @@ class TloadTest():
                     
                     
                 self.screen.fill((0, 0, 0))
-                
+                self.render_centered_text('')
                 # Record response time
                 RTsLet.append(secs-START_TIME)
                 time_appuiLet = secs-START_TIME
@@ -394,6 +395,7 @@ class TloadTest():
                     time.sleep(0.001)
                     
                 self.screen.fill((0, 0, 0))
+                self.render_centered_text('')
                 
                 RTsNum.append(secs-START_TIME)
                 time_appuiNum = secs-START_TIME

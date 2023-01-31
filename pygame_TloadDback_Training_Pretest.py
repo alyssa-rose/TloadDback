@@ -604,7 +604,7 @@ class TloadPretest():
         self.render_centered_text(text)
         time.sleep(2)
         self.screen.fill((0, 0, 0))
-        #self.digit_training()
+        self.digit_training()
         
         self.display_one_instruction(r"images\pretest\Letters_Instructions_REMADE.bmp")
         
@@ -612,8 +612,9 @@ class TloadPretest():
         self.render_centered_text(text)
         time.sleep(2)
         self.screen.fill((0, 0, 0))
-        #self.letter_training()
-        #self.learning_loop()
+        self.letter_training()
+        self.display_one_instruction(r"images\pretest\Letters_Digits_Instructions_REMADE.bmp")
+        self.learning_loop()
         self.pretest_loop()
         
         for key in self.file_dict.keys():

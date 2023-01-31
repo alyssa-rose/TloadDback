@@ -227,7 +227,8 @@ class TloadPretest():
             self.render_centered_text(i)
             time.sleep(self.subject_info["stimulus_time_duration_pretest"])
             self.screen.fill((0, 0, 0))
-            time.sleep(0.01)
+            self.render_centered_text('')
+            time.sleep(0.1)
         
         self.render_centered_text("Well Done! Digits Training Complete")
         time.sleep(2)
@@ -241,7 +242,9 @@ class TloadPretest():
             self.render_centered_text(i)
             time.sleep(self.subject_info["stimulus_time_duration_pretest"])
             self.screen.fill((0, 0, 0))
-            time.sleep(0.01)
+            self.render_centered_text('')
+
+            time.sleep(0.1)
             
         self.render_centered_text("Well Done! Letter Training Complete")
         
@@ -276,13 +279,16 @@ class TloadPretest():
                         response_key = "1"
                         time.sleep(STD+START_TIME-secs)
                         self.screen.fill((0, 0, 0))  
+                        self.render_centered_text('')
+
                         break  # finishing the loop
                     else:
                         response_key = "0"
                         continue
                     time.sleep(0.001)
                 self.screen.fill((0, 0, 0))  
-                
+                self.render_centered_text('')
+
                 
                 RESPONSE_LETTER = "0"
                 if int(response_key) == int(response_ground_truth[value]):
@@ -344,6 +350,7 @@ class TloadPretest():
                     time.sleep(0.001)
                     
                 self.screen.fill((0, 0, 0))  
+                self.render_centered_text('')
                 # Random number choice is odd
                 if numbers_choice % 2 == 1:
                     if R_NUM == "3":
@@ -432,6 +439,7 @@ class TloadPretest():
                         continue
                     time.sleep(0.001)
                 self.screen.fill((0, 0, 0))  
+                self.render_centered_text('')
                 
                 
                 RESPONSE_LETTER = "0"
@@ -494,6 +502,7 @@ class TloadPretest():
                     time.sleep(0.001)
                     
                 self.screen.fill((0, 0, 0))  
+                self.render_centered_text('')
                 # Random number choice is odd
                 if numbers_choice % 2 == 1:
                     if R_NUM == "3":
@@ -527,7 +536,6 @@ class TloadPretest():
                 error += 1
                 accumu_error += 1
                 STD = STD #STD does not increase --> repeat block
-                time.sleep(5)
                 
                 self.screen.fill((0, 0, 0))  
                 self.render_centered_text("Let's take a break.")
@@ -540,6 +548,7 @@ class TloadPretest():
                         break_time = False
                         time.sleep(1)
                         self.screen.fill((0, 0, 0))  
+                        self.render_centered_text('')
                         break  # finishing the loop
                     else:
                         continue
@@ -558,6 +567,7 @@ class TloadPretest():
                         break_time = False
                         time.sleep(1)
                         self.screen.fill((0, 0, 0))  
+                        self.render_centered_text('')
                         break  # finishing the loop
                     else:
                         continue
@@ -613,9 +623,13 @@ class TloadPretest():
         time.sleep(2)
         self.screen.fill((0, 0, 0))
         self.letter_training()
+        
         self.display_one_instruction(r"images\pretest\Letters_Digits_Instructions_REMADE.bmp")
-        self.learning_loop()
+        text = 'Letters and Digits Training is Beginning...'
+        self.render_centered_text(text)
+        time.sleep(2)
         self.screen.fill((0, 0, 0))
+        self.learning_loop()
         self.pretest_loop()
         
         for key in self.file_dict.keys():

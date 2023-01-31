@@ -584,7 +584,7 @@ def main():
     
     for key in file_dict.keys():
         df = file_dict[key]["dataframe"]
-        df.to_csv(file_dict[key]["file_path"])
+        df.to_csv(file_dict[key]["file_path"], index=False)
 
 
 

@@ -181,7 +181,7 @@ class TloadPretest():
         """
         dirs_to_make = ['Results_TloadDback_TRAINING', 
                         'Results_TloadDback_PRETEST']
-        dirs_to_make = ["results/{}".format(os.getcwd(), i) for i in dirs_to_make]
+        dirs_to_make = ["results/{}".format(i) for i in dirs_to_make]
         
         if not os.path.isdir("results"):
             os.mkdir("results")

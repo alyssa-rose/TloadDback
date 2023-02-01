@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan 30 20:24:43 2023
+Created on Mon Jan 30 09:20:11 2023
 
-@author: Rose.Alyssa
+Author: Alyssa Bekai Rose
+
+This script runs the TloadDback test as specified with minimal modifications
+in Borragan et al. (2017). The original code was implemented in MATLAB, found
+here: https://osf.io/ay6er/, and converted to Python in a pygame format.
+
+The pretest and test have only been tested on a Windows 10 OS.
 """
 
 import pygame
@@ -76,25 +82,73 @@ series20         = [ 'C'  'T'  'T'  'E'  'R'  'E'  'E'  'U'  'U'  'N'  'P'  'P' 
 REPONSE_SERIES20 = [ '0'  '0'  '1'  '0'  '0'  '0'  '1'  '0'  '1'  '0'  '0'  '1'  '0'  '0'  '1'  '0'  '0'  '0'  '1'  '0'  '1'  '0'  '0'  '1'  '0'  '1'  '0'  '0'  '1'  '0' ]
 
 class TloadTest():
+    """ 
+    This class contains all functions and methods required
+    for conducting the TloadDback test as outlined in Borragan et al. (2017)
+    """
     def __init__(self):
         self.SERIES = []
         self.RESPONSES = []
         
         with open("configs/test_settings.yaml", 'r') as stream:
             self.subject_info = yaml.safe_load(stream)
-            
-        pretest_conditions = pd.read_csv("{}/results/Results_TloadDback_PRETEST/PRETEST_{}.csv".format(os.getcwd(), self.subject_info["subject"]))
+        if not os.path.isdir("results"):
+             text = "No 'results' folder indicates that the pretest has not been ran. Please run the pretest first."
+             print("\n{}".format(("*"*len(text))))
+             print("\n\n\n{}\n\n\n".format(text))
+             print("{}".format(("*"*len(text))))
+             sys.exit(0)
+             
+        if not os.path.isfile("results/Results_TloadDback_PRETEST/PRETEST_{}.csv".format(self.subject_info["subject"])):
+             text = "No PRETEST file found for subject. Please conduct the pretest with the correct subject name and number."
+             print("\n{}".format(("*"*len(text))))
+             print("\n\n\n{}\n\n\n".format(text))
+             print("{}".format(("*"*len(text))))
+             sys.exit(0)
+        pretest_conditions = pd.read_csv("results/Results_TloadDback_PRETEST/PRETEST_{}.csv".format(self.subject_info["subject"]))
         if self.subject_info["condition"] == "HCL":
             self.subject_info["stimulus_time_duration"] = pretest_conditions["PRETEST_HCL"][0]
         else:
             self.subject_info["stimulus_time_duration"] = pretest_conditions["PRETEST_LCL"][0]
             
-        # self.repetitions = round(16/self.subject_info["stimulus_time_duration"])
+        if "test_reps" not in list(self.subject_info.keys()):
+            self.subject_info["test_reps"] = round(16/self.subject_info["stimulus_time_duration"])
         self.make_series_list()
         self.initialize_directory()
         self.initialize_files()
         
+    def check_kill(self):
+        """
+        Checks if kill key pressed, and kills the game if yes.
+
+        Returns
+        -------
+        None.
+
+        """
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+               if event.key == pygame.K_ESCAPE:
+                   pygame.quit()
+                   sys.exit(0)
+                   
     def separate_series(self, series: list):
+        """
+        Formats the series and responses into Pythonic lists.
+        
+        This function should not be called directly.
+
+        Parameters
+        ----------
+        series : list
+            Series or response list as seen above.
+
+        Returns
+        -------
+        split_series : list
+            The series or response in a Pythonic form list.
+
+        """
         split_series = []
         for i in series[0]: 
             split_series.append(i)
@@ -102,6 +156,16 @@ class TloadTest():
         return split_series
     
     def make_series_list(self):
+        """
+        Converts the above series and responses into Pythonic lists.
+        
+        This function should not be called directly.
+        
+        Returns
+        -------
+        None.
+
+        """
         series_all = [series1, series2, series3, series4, series5, series6, 
                       series7, series8, series9, series10, series11, series12, 
                       series13, series14, series15, series16, series17, series18, 
@@ -123,15 +187,20 @@ class TloadTest():
             self.RESPONSES.append(r)
             
     def initialize_directory(self):
+        """
+        Initializes the directories needed for the test data.
+
+        Returns
+        -------
+        None.
+
+        """
         dirs_to_make = ['Results_TloadDback_R_given', 
                         'Results_TloadDback_Performance',
                         'Results_TloadDback_Performance_Type_answer',
                         'Results_TloadDback_Performance_RTs',
                         'Results_TloadDback_Performance_Time']
-        dirs_to_make = ["{}/results/{}".format(os.getcwd(), i) for i in dirs_to_make]
-        
-        if not os.path.isdir("{}/results".format(os.getcwd())):
-            os.mkdir("{}/results".format(os.getcwd()))
+        dirs_to_make = ["results/{}".format(i) for i in dirs_to_make]
             
         for dir_path in dirs_to_make:
             if not os.path.isdir(dir_path):
@@ -140,6 +209,15 @@ class TloadTest():
 
 
     def initialize_files(self):
+        """
+        Initializes all of the dataframes which correspond to different CSV
+        data sheets.
+
+        Returns
+        -------
+        None.
+
+        """
         file_dict = {}
         
         subject = self.subject_info["subject"]
@@ -155,7 +233,8 @@ class TloadTest():
                                                                    'response_letter', 
                                                                    'is_correct_letter',
                                                                    'response_num',
-                                                                   'is_correct_num'])}
+                                                                   'is_correct_num',
+                                                                   'rep'])}
         
         file_dict["Performance"] = {"file_path": "{}/TloadDback_PERFORMANCE_TASK_{}_{}.csv".format(self.dirs[1], subject, cond),
                                     "dataframe": pd.DataFrame(columns=['subject', 
@@ -228,7 +307,26 @@ class TloadTest():
             y_offset += fh
         pygame.display.flip()
         
-    def display_one_instruction(self, image_path):
+    def display_one_instruction(self, image_path: str):
+        """
+        Displays the .BMP instruction files.
+
+        Parameters
+        ----------
+        image_path : str
+            Path to the location of the image. All instruction images should
+            be stored in the 'images' subfolder.
+
+        Returns
+        -------
+        None.
+
+        """
+        wait_condition = keyboard.is_pressed("y")
+        while wait_condition:
+            wait_condition = keyboard.is_pressed("y")
+            time.sleep(0.001)
+            
         img = pygame.image.load_basic(image_path)
         img_rect = img.get_rect(center=self.screen.get_rect().center)
         self.screen.blit(img, img_rect)
@@ -236,18 +334,29 @@ class TloadTest():
         
         display_instr = True
         while display_instr:
+            self.check_kill()
             # Keep displaying the image until the space bar is pressed!
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        self.screen.fill((0, 0, 0))
-                        display_instr = False
+            if keyboard.is_pressed("y"):  # space key pressed
+                display_instr = False
+                break  # finishing the loop
+            else:
+                continue
             time.sleep(0.001)
         # to prevent overly fast screen changes between instructions
         time.sleep(0.5)
+        self.screen.fill((0, 0, 0))  
+        self.render_centered_text('')
         
         
     def test_sequence(self):
+        """
+        Runs the actual test!
+
+        Returns
+        -------
+        None.
+
+        """
         RTsLet = []
         PERC_time_appui_TOTLet = []
         RTsNum = []
@@ -261,6 +370,9 @@ class TloadTest():
         PERFORMANCE_TOTAL = []   
         
         BEGIN_TIME = time.time()
+        self.render_centered_text("Starting Test Sequence...")
+        time.sleep(3)
+        self.screen.fill((0, 0, 0))
         for rep in range(self.subject_info["test_reps"]):
             indx = np.random.choice(len(self.SERIES))
             sequence = self.SERIES[indx]
@@ -273,13 +385,8 @@ class TloadTest():
             DISTRIB_R_LETTRE = []
             DISTRIB_R_SERIE = []
             
-            
-            self.render_centered_text("STARTING TEST SEQUENCE...")
-            time.sleep(3)
-            self.screen.fill((0, 0, 0))
-            
-            
             for value in range(len(sequence)):
+                self.check_kill()
                 self.render_centered_text(sequence[value])
                 
                 START_TIME = time.time()
@@ -436,6 +543,7 @@ class TloadTest():
                 r_given_row.loc[0, "is_correct_letter"] = RESPONSE_LETTER
                 r_given_row.loc[0, "response_num"] = R_NUM
                 r_given_row.loc[0, "is_correct_num"] = RESPONSE_NUM
+                r_given_row.loc[0, "rep"] = rep
                 self.file_dict["R_given"]["dataframe"] = pd.concat([self.file_dict["R_given"]["dataframe"], r_given_row])
                 
                 

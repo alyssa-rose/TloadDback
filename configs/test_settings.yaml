@@ -2,7 +2,7 @@
 ############################################
 stimulus_time_duration_pretest: 1.5 # DO NOT CHANGE.
 
-subject: "CHANGE_THIS_FIELD"
+subject: "0"
 subject_number: 0 # Change this field
 age: 26 # Change this field
 sex: "male" # Change this field. Either "male" or "female"

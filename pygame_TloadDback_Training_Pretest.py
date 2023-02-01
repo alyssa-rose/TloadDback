@@ -2,7 +2,13 @@
 """
 Created on Mon Jan 30 09:20:11 2023
 
-@author: Rose.Alyssa
+Author: Alyssa Bekai Rose
+
+This script runs the TloadDback pretest as specified with minimal modifications
+in Borragan et al. (2017). The original code was implemented in MATLAB, found
+here: https://osf.io/ay6er/, and converted to Python in a pygame format.
+
+The pretest and test have only been tested on a Windows 10 OS.
 """
 
 import pygame
@@ -76,6 +82,10 @@ REPONSE_SERIES20 = [ '0'  '0'  '1'  '0'  '0'  '0'  '1'  '0'  '1'  '0'  '0'  '1' 
 
 
 class TloadPretest():
+    """ 
+    This class contains all functions and methods required
+    for conducting the TloadDback pretest as outlined in Borragan et al. (2017)
+    """
     def __init__(self):
         self.SERIES = []
         self.RESPONSES = []
@@ -88,14 +98,56 @@ class TloadPretest():
         self.initialize_directory()
         self.initialize_files()
         
+    def check_kill(self):
+        """
+        Checks if kill key pressed, and kills the game if yes.
+
+        Returns
+        -------
+        None.
+
+        """
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+               if event.key == pygame.K_ESCAPE:
+                   pygame.quit()
+                   sys.exit(0)
+        
     def separate_series(self, series: list):
+        """
+        Formats the series and responses into Pythonic lists.
+        
+        This function should not be called directly.
+
+        Parameters
+        ----------
+        series : list
+            Series or response list as seen above.
+
+        Returns
+        -------
+        split_series : list
+            The series or response in a Pythonic form list.
+
+        """
         split_series = []
         for i in series[0]: 
             split_series.append(i)
             
         return split_series
     
+    
     def make_series_list(self):
+        """
+        Converts the above series and responses into Pythonic lists.
+        
+        This function should not be called directly.
+        
+        Returns
+        -------
+        None.
+
+        """
         series_all = [series1, series2, series3, series4, series5, series6, 
                       series7, series8, series9, series10, series11, series12, 
                       series13, series14, series15, series16, series17, series18, 
@@ -119,12 +171,20 @@ class TloadPretest():
     
     
     def initialize_directory(self):
+        """
+        Initializes the directories needed for the pretest data.
+
+        Returns
+        -------
+        None.
+
+        """
         dirs_to_make = ['Results_TloadDback_TRAINING', 
                         'Results_TloadDback_PRETEST']
-        dirs_to_make = ["{}/results/{}".format(os.getcwd(), i) for i in dirs_to_make]
+        dirs_to_make = ["results/{}".format(os.getcwd(), i) for i in dirs_to_make]
         
-        if not os.path.isdir("{}/results".format(os.getcwd())):
-            os.mkdir("{}/results".format(os.getcwd()))
+        if not os.path.isdir("results"):
+            os.mkdir("results")
             
         for dir_path in dirs_to_make:
             if not os.path.isdir(dir_path):
@@ -135,6 +195,15 @@ class TloadPretest():
     
     
     def initialize_files(self):
+        """
+        Initializes all of the dataframes which correspond to different CSV
+        data sheets.
+
+        Returns
+        -------
+        None.
+
+        """
         file_dict = {}
         
         subject = self.subject_info["subject"]
@@ -163,7 +232,26 @@ class TloadPretest():
     
     
     
-    def display_one_instruction(self, image_path):
+    def display_one_instruction(self, image_path: str):
+        """
+        Displays the .BMP instruction files.
+
+        Parameters
+        ----------
+        image_path : str
+            Path to the location of the image. All instruction images should
+            be stored in the 'images' subfolder.
+
+        Returns
+        -------
+        None.
+
+        """
+        wait_condition = keyboard.is_pressed("y")
+        while wait_condition:
+            wait_condition = keyboard.is_pressed("y")
+            time.sleep(0.001)
+            
         img = pygame.image.load_basic(image_path)
         img_rect = img.get_rect(center=self.screen.get_rect().center)
         self.screen.blit(img, img_rect)
@@ -171,17 +259,34 @@ class TloadPretest():
         
         display_instr = True
         while display_instr:
+            self.check_kill()
             # Keep displaying the image until the space bar is pressed!
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        self.screen.fill((0, 0, 0))
-                        display_instr = False
+            if keyboard.is_pressed("y"):  # space key pressed
+                display_instr = False
+                break  # finishing the loop
+            else:
+                continue
             time.sleep(0.001)
         # to prevent overly fast screen changes between instructions
         time.sleep(0.5)
+        self.screen.fill((0, 0, 0))  
+        self.render_centered_text('')
         
-    def render_centered_text(self, text):
+        
+    def render_centered_text(self, text: str):
+        """
+        Prints text to the center of the screen.
+
+        Parameters
+        ----------
+        text : str
+            The text to display
+
+        Returns
+        -------
+        None.
+
+        """
         # first, split the text into words
         words = text.split()
         # now, construct lines out of these words
@@ -220,10 +325,19 @@ class TloadPretest():
         
     
     def digit_training(self):
+        """
+        Runs the digits (pre) pre-test learning loop.
+
+        Returns
+        -------
+        None.
+
+        """
         # Show general instructions and digit instructions!
         nums = ['9','1','2','8','4','6','7','8','9','3','1','6']
         
         for i in nums:
+            self.check_kill()
             self.render_centered_text(i)
             time.sleep(self.subject_info["stimulus_time_duration_pretest"])
             self.screen.fill((0, 0, 0))
@@ -236,9 +350,18 @@ class TloadPretest():
     
     
     def letter_training(self):
+        """
+        Runs the letters (pre) pre-test learning loop.
+
+        Returns
+        -------
+        None.
+
+        """
         # Show the letter instructions
         letters = [ 'E', 'P', 'P', 'L', 'A', 'P', 'L', 'A', 'A', 'N', 'T', 'N', 'N', 'N', 'U', 'T', 'T', 'P', 'R', 'R' ]
         for i in letters:
+            self.check_kill()
             self.render_centered_text(i)
             time.sleep(self.subject_info["stimulus_time_duration_pretest"])
             self.screen.fill((0, 0, 0))
@@ -253,6 +376,16 @@ class TloadPretest():
        
         
     def learning_loop(self):
+        """
+        Runs the digits and letters (pre) pre-test learning loop. The subject
+        must meet at least an 85% performance value to continue to the 
+        actual pretest.
+
+        Returns
+        -------
+        None.
+
+        """
         performance_holder = 0.4
         STD = self.subject_info["stimulus_time_duration_pretest"] # set for pretest regardless of user for some reason?
         
@@ -269,6 +402,7 @@ class TloadPretest():
             
             for value in range(len(sequence)):
                 self.render_centered_text(sequence[value])
+                self.check_kill()
                 
                 START_TIME = time.time()
                 secs = time.time()
@@ -385,11 +519,11 @@ class TloadPretest():
             
             time.sleep(2)
             self.screen.fill((0, 0, 0))  
-            self.render_centered_text("Press the space bar to begin again.")
+            self.render_centered_text("Press 'Y' to begin again.")
             
             break_time = True
             while break_time:
-                if keyboard.is_pressed("space"):  # space key pressed
+                if keyboard.is_pressed("y"):  # space key pressed
                     break_time = False
                     time.sleep(1)
                     self.screen.fill((0, 0, 0))  
@@ -399,6 +533,16 @@ class TloadPretest():
                 time.sleep(0.001)
                
     def pretest_loop(self): 
+        """
+        The actual pretest. This test determines the HCL and LCL stimulus time
+        duration values for the subject. As the subject continues to meet 
+        a performance threshhold of 85%, the stimulus time duration decreases.
+
+        Returns
+        -------
+        None.
+
+        """
         self.render_centered_text("The real pretest will now begin!")
         time.sleep(2)
         self.screen.fill((0, 0, 0)) 
@@ -422,6 +566,7 @@ class TloadPretest():
             REPONSE_LETTRE_CORR = []
             
             for value in range(len(sequence)):
+                self.check_kill()
                 self.render_centered_text(sequence[value])
                 
                 START_TIME = time.time()
@@ -536,15 +681,39 @@ class TloadPretest():
                 error += 1
                 accumu_error += 1
                 STD = STD #STD does not increase --> repeat block
+                if error == 3: 
+                    # they couldn't perform at this STD, so revert to previous
+                    # and set as HCL. This finishes the test.
+                    self.screen.fill((0, 0, 0))  
+                    self.render_centered_text("Congrats! The pretest is complete.")
+                    time.sleep(3)
+                    self.screen.fill((0, 0, 0))  
+                    self.render_centered_text("")
+                    PRETEST_HCL = STD + 0.10
+                    PRETEST_LCL = PRETEST_HCL + 0.5*PRETEST_HCL
+                    break
+                
+                if accumu_error == 3: # Although this value is fixed to 3 in Borragan & Slama,2017, increasing it at 5 might increase the pretest calibration
+                    # the subject has had their performance across all tests
+                    # dip below 85% 3 times. This ends the test. STD is kept 
+                    # at the current value.
+                    self.screen.fill((0, 0, 0))  
+                    self.render_centered_text("Congrats! The pretest is complete.")
+                    time.sleep(3)
+                    self.screen.fill((0, 0, 0))  
+                    self.render_centered_text("")  
+                    PRETEST_HCL = STD
+                    PRETEST_LCL = PRETEST_HCL + 0.5*PRETEST_HCL
+                    break
                 
                 self.screen.fill((0, 0, 0))  
                 self.render_centered_text("Let's take a break.")
                 time.sleep(2)
                 self.screen.fill((0, 0, 0))  
-                self.render_centered_text("Press the space bar to begin again when you're ready.")
+                self.render_centered_text("Press 'Y' to begin again when you're ready.")
                 break_time = True
                 while break_time:
-                    if keyboard.is_pressed("space"):  # space key pressed
+                    if keyboard.is_pressed("y"):  # space key pressed
                         break_time = False
                         time.sleep(1)
                         self.screen.fill((0, 0, 0))  
@@ -560,10 +729,10 @@ class TloadPretest():
                 self.render_centered_text("Let's take a break.")
                 time.sleep(2)
                 self.screen.fill((0, 0, 0))  
-                self.render_centered_text("Press the space bar to begin again when you're ready.")
+                self.render_centered_text("Press 'Y' to begin again when you're ready.")
                 break_time = True
                 while break_time:
-                    if keyboard.is_pressed("space"):  # space key pressed
+                    if keyboard.is_pressed("y"):  # space key pressed
                         break_time = False
                         time.sleep(1)
                         self.screen.fill((0, 0, 0))  
@@ -572,17 +741,7 @@ class TloadPretest():
                     else:
                         continue
                     time.sleep(0.001)
-                
-            # Loop repetition
-            if error == 3: # they couldn't perform at this STD, so revert to previous
-                PRETEST_HCL = STD + 0.10
-                PRETEST_LCL = PRETEST_HCL + 0.5*PRETEST_HCL
-                break
-            
-            if accumu_error == 3: # Although this value is fixed to 3 in Borragan & Slama,2017, increasing it at 5 might increase the pretest calibration
-                PRETEST_HCL = STD
-                PRETEST_LCL = PRETEST_HCL + 0.5*PRETEST_HCL
-                break
+                            
         
         pre_row = pd.DataFrame(columns=list(self.file_dict["Pretest"]["dataframe"].columns))
         pre_row.loc[0, "Subject"] = self.subject_info["subject"]
@@ -616,6 +775,7 @@ class TloadPretest():
         self.screen.fill((0, 0, 0))
         self.digit_training()
         
+        
         self.display_one_instruction(r"images\pretest\Letters_Instructions_REMADE.bmp")
         
         text = 'Letters Training is Beginning...'
@@ -624,6 +784,8 @@ class TloadPretest():
         self.screen.fill((0, 0, 0))
         self.letter_training()
         
+        time.sleep(2)
+        self.screen.fill((0, 0, 0))
         self.display_one_instruction(r"images\pretest\Letters_Digits_Instructions_REMADE.bmp")
         text = 'Letters and Digits Training is Beginning...'
         self.render_centered_text(text)

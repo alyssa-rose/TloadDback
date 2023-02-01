@@ -12,9 +12,9 @@ The test is comprised on two parts: 1.) The pretest to individually calibrate hi
 3. `pip install -r requirements.txt` (this can and should be done within a virtual environment!)
 4. in `configs/test_settings.yaml` modify: 
     * **subject**: Subjects identifier. If you do not wish to set it or do not have a separate identifier, set it equal to the subject_number in a string 
-                   format. **It cannot empty!**
-    * **subject_number**: Subject's number, must be unique to that subject. **It cannot be empty!**
-    * **age**: Subject's age. May be obfuscated to protect identity. Age does not impact the results or test conditions. This value must be a positive integer.
+                   format. **It cannot be empty and must be unique!**
+    * **subject_number**: Subject's number, must be unique to that subject. **It cannot be empty and must be unique!**
+    * **age**: Subject's age. May be obfuscated to protect identity. Age does not impact the results or test conditions. This value must be a positive integer. 
     * **sex**: Either 'male' or 'female'
     * **condition**: Either 'HCL' or 'LCL'. It must be one of these two, or the test will not run.
     * **test_reps** [OPTIONAL]: How many times the test should be repeated. In Borragan et al. (2017), the test runs for 16 minutes. However, you may specify a 

@@ -1,9 +1,11 @@
 # Test Params
 ############################################
-subject: "PLACEHOLDER"
-subject_number: 5
-age: 23
-sex: "female"
-condition: "HCL"
-stimulus_time_duration_pretest: 1.5
-test_reps: 1
+stimulus_time_duration_pretest: 1.5 # DO NOT CHANGE.
+
+subject: "CHANGE_THIS_FIELD"
+subject_number: 0 # Change this field
+age: 26 # Change this field
+sex: "male" # Change this field. Either "male" or "female"
+condition: "HCL" # Change this field. Either "HCL" or "LCL"
+# test_reps: 1  # you can specify this yourself, otherwise the test runs
+                # for 16 minutes.

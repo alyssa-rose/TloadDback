@@ -1,5 +1,8 @@
 # TloadDback
 
+**This has only been tested on a Windows 10 machine. Use on Linux may require sudo privileges for use of the `keyboard` library. There is no information on the functionality of this code in a Mac environment, but installation instructions for Pygame may be found here: https://www.pygame.org/wiki/GettingStarted#Mac%20installation**
+
+
 The time-load dual-back (TloadDback) is a cognitive test in which different levels of cognitive load can be induced and individually adjusted by modifying the 
 time available to process and manipulate the ongoing task demands.
 

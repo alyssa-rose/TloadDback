@@ -99,13 +99,13 @@ class TloadTest():
              print("{}".format(("*"*len(text))))
              sys.exit(0)
              
-        if not os.path.isfile("results/Results_TloadDback_PRETEST/PRETEST_{}.csv".format(self.subject_info["subject"])):
-             text = "No PRETEST file found for subject. Please conduct the pretest with the correct subject name and number."
+        if not os.path.isfile("results/Results_TloadDback_PRETEST/PRETEST_{}.csv".format(self.subject_info["subject_number"])):
+             text = "No PRETEST file found for subject. Please conduct the pretest with the correct subject number."
              print("\n{}".format(("*"*len(text))))
              print("\n\n\n{}\n\n\n".format(text))
              print("{}".format(("*"*len(text))))
              sys.exit(0)
-        pretest_conditions = pd.read_csv("results/Results_TloadDback_PRETEST/PRETEST_{}.csv".format(self.subject_info["subject"]))
+        pretest_conditions = pd.read_csv("results/Results_TloadDback_PRETEST/PRETEST_{}.csv".format(self.subject_info["subject_number"]))
         if self.subject_info["condition"] == "HCL":
             self.subject_info["stimulus_time_duration"] = pretest_conditions["PRETEST_HCL"][0]
         else:
@@ -220,12 +220,11 @@ class TloadTest():
         """
         file_dict = {}
         
-        subject = self.subject_info["subject"]
+        subject_number = self.subject_info["subject_number"]
         cond = self.subject_info["condition"]
         
-        file_dict["R_given"] = {"file_path": "{}/TloadDback_REPONSES_TASK_{}_{}.csv".format(self.dirs[0], subject, cond),
-                                "dataframe": pd.DataFrame(columns=['subject', 
-                                                                   'subject_number', 
+        file_dict["R_given"] = {"file_path": "{}/TloadDback_REPONSES_TASK_{}_{}.csv".format(self.dirs[0], subject_number, cond),
+                                "dataframe": pd.DataFrame(columns=['subject_number',
                                                                    'age', 
                                                                    'sex',  
                                                                    'letter_shown', 
@@ -236,23 +235,22 @@ class TloadTest():
                                                                    'is_correct_num',
                                                                    'rep'])}
         
-        file_dict["Performance"] = {"file_path": "{}/TloadDback_PERFORMANCE_TASK_{}_{}.csv".format(self.dirs[1], subject, cond),
-                                    "dataframe": pd.DataFrame(columns=['subject', 
-                                                                       'subject_number',
+        file_dict["Performance"] = {"file_path": "{}/TloadDback_PERFORMANCE_TASK_{}_{}.csv".format(self.dirs[1], subject_number, cond),
+                                    "dataframe": pd.DataFrame(columns=['subject_number',
                                                                        'age',
                                                                        'sex', 
                                                                        'performance'])}
         
-        file_dict["Performance_Type_answer"] = {"file_path": "{}/TloadDback_PERF_by_TofR_TASK_{}_{}.csv".format(self.dirs[2], subject, cond),
-                                                "dataframe": pd.DataFrame(columns=['subject', 
+        file_dict["Performance_Type_answer"] = {"file_path": "{}/TloadDback_PERF_by_TofR_TASK_{}_{}.csv".format(self.dirs[2], subject_number, cond),
+                                                "dataframe": pd.DataFrame(columns=['subject_number',
                                                                                    'Correct_answer', 
                                                                                    'Correct_omSTDon', 
                                                                                    'OmSTDon', 
                                                                                    'FAs',
                                                                                    'Correct_answerNUM'])}
         
-        file_dict["Performance_RTs"] = {"file_path": "{}/TloadDback_RTs_TASK_{}_{}.csv".format(self.dirs[3], subject, cond),
-                                        "dataframe": pd.DataFrame(columns=['subject', 
+        file_dict["Performance_RTs"] = {"file_path": "{}/TloadDback_RTs_TASK_{}_{}.csv".format(self.dirs[3], subject_number, cond),
+                                        "dataframe": pd.DataFrame(columns=['subject_number',
                                                                            'Answer_Letter',
                                                                            'Given_Letter',
                                                                            'is_correct_letter',
@@ -262,15 +260,28 @@ class TloadTest():
                                                                            'is_correct_num',
                                                                            'RTs_Num'])}
         
-        file_dict["Performance_Time"] = {"file_path": "{}/BEGXP_ENDXP_{}_{}.csv".format(self.dirs[4], subject, cond),
-                                         "dataframe": pd.DataFrame(columns=['subject', 
+        file_dict["Performance_Time"] = {"file_path": "{}/BEGXP_ENDXP_{}_{}.csv".format(self.dirs[4], subject_number, cond),
+                                         "dataframe": pd.DataFrame(columns=['subject_number',
                                                                             'start_time',
                                                                             'end_time',
                                                                             'total_time'])}
         
         self.file_dict = file_dict
-    
-    def render_centered_text(self, text):
+
+    def render_centered_text(self, text: str):
+        """
+        Prints text to the center of the screen.
+
+        Parameters
+        ----------
+        text : str
+            The text to display
+
+        Returns
+        -------
+        None.
+
+        """
         # first, split the text into words
         words = text.split()
         # now, construct lines out of these words
@@ -281,30 +292,34 @@ class TloadTest():
             while len(words) > 0:
                 line_words.append(words.pop(0))
                 fw, fh = self.font.size(' '.join(line_words + words[:1]))
-                if fw > self.SCREEN_X_CENTER:
+                if fw > self.width - 150:
                     break
-    
+
             # add a line consisting of those words
             line = ' '.join(line_words)
             lines.append(line)
-    
+
         # now we've split our text into lines that fit into the width, actually
         # render them
-    
+
         # we'll render each line below the last, so we need to keep track of
-        # the culmative height of the lines we've rendered so far
+        # the cumulative height of the lines we've rendered so far
         y_offset = 0
+        line_number = 0
         for line in lines:
             fw, fh = self.font.size(line)
-    
+
             # (tx, ty) is the top-left of the font surface
             tx = self.SCREEN_X_CENTER - fw / 2
-            ty = self.SCREEN_Y_CENTER + y_offset
-    
+            if line_number == 0:
+                line_number = 1
+                ty = self.SCREEN_Y_CENTER - ((len(lines) / 2) * fh)
+            else:
+                ty += fh
+
             font_surface = self.font.render(line, True, (255, 255, 255))
             self.screen.blit(font_surface, (tx, ty))
-    
-            y_offset += fh
+
         pygame.display.flip()
         
     def display_one_instruction(self, image_path: str):
@@ -371,7 +386,7 @@ class TloadTest():
         
         BEGIN_TIME = time.time()
         self.render_centered_text("Starting Test Sequence...")
-        time.sleep(3)
+        time.sleep(self.INFO_SLEEP)
         self.screen.fill((0, 0, 0))
         for rep in range(self.subject_info["test_reps"]):
             indx = np.random.choice(len(self.SERIES))
@@ -533,7 +548,6 @@ class TloadTest():
                 
                 # R GIVEN
                 r_given_row = pd.DataFrame(columns=list(self.file_dict["R_given"]["dataframe"].columns))
-                r_given_row.loc[0, "subject"] = self.subject_info["subject"]
                 r_given_row.loc[0, "subject_number"] = self.subject_info["subject_number"]
                 r_given_row.loc[0, "age"] = self.subject_info["age"]
                 r_given_row.loc[0, "sex"] = self.subject_info["sex"]
@@ -549,7 +563,7 @@ class TloadTest():
                 
                 # PERFORMANCE RTS
                 perf_rts_row = pd.DataFrame(columns=list(self.file_dict["Performance_RTs"]["dataframe"].columns))
-                perf_rts_row.loc[0, "subject"] = self.subject_info["subject"]
+                perf_rts_row.loc[0, "subject_number"] = self.subject_info["subject_number"]
                 perf_rts_row.loc[0, "Answer_Letter"] = response_ground_truth[value]
                 perf_rts_row.loc[0, "Given_Letter"] = response_key
                 perf_rts_row.loc[0, "is_correct_letter"] = RESPONSE_LETTER
@@ -571,7 +585,6 @@ class TloadTest():
             
             # PERFORMANCE
             perf_row = pd.DataFrame(columns=list(self.file_dict["Performance"]["dataframe"].columns))
-            perf_row.loc[0, "subject"] = self.subject_info["subject"]
             perf_row.loc[0, "subject_number"] = self.subject_info["subject_number"]
             perf_row.loc[0, "age"] = self.subject_info["age"]
             perf_row.loc[0, "sex"] = self.subject_info["sex"]
@@ -581,7 +594,7 @@ class TloadTest():
             
             # PERFORMANCE_TYPE_ANSWER
             perf_type_row = pd.DataFrame(columns=list(self.file_dict["Performance_Type_answer"]["dataframe"].columns))
-            perf_type_row.loc[0, "subject"] = self.subject_info["subject"]
+            perf_type_row.loc[0, "subject_number"] = self.subject_info["subject_number"]
             perf_type_row.loc[0, "Correct_answer"] = ANSWER_LETTER_TYPE1
             perf_type_row.loc[0, "Correct_omSTDon"] = ANSWER_LETTER_TYPE2
             perf_type_row.loc[0, "OmSTDon"] = ANSWER_LETTER_TYPE3
@@ -592,7 +605,7 @@ class TloadTest():
         self.screen.fill((0, 0, 0))
         END_TIME = time.time()  
         time_row = pd.DataFrame(columns=list(self.file_dict["Performance_Time"]["dataframe"].columns))
-        time_row.loc[0, "subject"] = self.subject_info["subject"]
+        time_row.loc[0, "subject_number"] = self.subject_info["subject_number"]
         time_row.loc[0, "start_time"] = str(datetime.datetime.fromtimestamp(BEGIN_TIME))
         time_row.loc[0, "end_time"] = str(datetime.datetime.fromtimestamp(END_TIME))
         time_row.loc[0, "total_time"] = END_TIME - BEGIN_TIME
@@ -602,15 +615,17 @@ class TloadTest():
     def run_game(self):
         # Initializing the game parameters
         pygame.init()
+        self.INFO_SLEEP = 3
         w, h = pygame.display.Info().current_w, pygame.display.Info().current_h
-        self.font = pygame.font.Font(pygame.font.match_font('verdana'), 50)
+        self.width = w
+        self.font = pygame.font.Font(pygame.font.match_font('verdana'), 120)
         self.screen = pygame.display.set_mode(size=(w, h))
         self.SCREEN_X_CENTER, self.SCREEN_Y_CENTER = self.screen.get_rect().center
-        
+
         
         text = "Let's Begin!"
         self.render_centered_text(text)
-        time.sleep(2)
+        time.sleep(self.INFO_SLEEP)
         self.screen.fill((0, 0, 0))
         
         self.display_one_instruction(r"images\test\Instructions_1_REMADE.bmp")

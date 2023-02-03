@@ -2,10 +2,12 @@
 ############################################
 stimulus_time_duration_pretest: 1.5 # DO NOT CHANGE.
 
-subject: "123abc" # Change this field. You can set this equal to subject number if you please!
-subject_number: 123 # Change this field
-age: 23 # Change this field
-sex: "female" # Change this field. Either "male" or "female"
-condition: "HCL" # Change this field. Either "HCL" or "LCL"
-# test_reps: 1  # you can specify this yourself, otherwise the test runs
-                # for 16 minutes.
+subject_number: ab12c3 # Change this field
+age: 99                # Change this field
+sex: "female"          # Change this field. Either "male" or "female"
+condition: "HCL"       # Change this field. Either "HCL" or "LCL"
+
+# you can specify this yourself, otherwise the test runs
+# for 16 minutes.
+
+# test_reps: 1

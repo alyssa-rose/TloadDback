@@ -206,21 +206,19 @@ class TloadPretest():
         """
         file_dict = {}
         
-        subject = self.subject_info["subject"]
+        subject_number = self.subject_info["subject_number"]
         cond = self.subject_info["condition"]
         
-        file_dict['Training'] = {"file_path": "{}/TRAINING_{}.csv".format(self.dirs[0], subject),
-                                 "dataframe": pd.DataFrame(columns=['Subject', 
-                                                                    'Subject_number', 
+        file_dict['Training'] = {"file_path": "{}/TRAINING_{}.csv".format(self.dirs[0], subject_number),
+                                 "dataframe": pd.DataFrame(columns=['Subject_number',
                                                                     'Age', 
                                                                     'Sex', 
                                                                     'RESPONSE_LETTER', 
                                                                     'RESPONSE_NUM',
                                                                     'TYPE'])}
         
-        file_dict['Pretest'] = {"file_path": "{}/PRETEST_{}.csv".format(self.dirs[1], subject),
-                                "dataframe": pd.DataFrame(columns=['Subject', 
-                                                                   'Subject_number',
+        file_dict['Pretest'] = {"file_path": "{}/PRETEST_{}.csv".format(self.dirs[1], subject_number),
+                                "dataframe": pd.DataFrame(columns=['Subject_number',
                                                                    'Age',
                                                                    'Sex', 
                                                                    'PRETEST_HCL',
@@ -297,7 +295,7 @@ class TloadPretest():
             while len(words) > 0:
                 line_words.append(words.pop(0))
                 fw, fh = self.font.size(' '.join(line_words + words[:1]))
-                if fw > self.SCREEN_X_CENTER:
+                if fw > self.width-150:
                     break
     
             # add a line consisting of those words
@@ -308,19 +306,23 @@ class TloadPretest():
         # render them
     
         # we'll render each line below the last, so we need to keep track of
-        # the culmative height of the lines we've rendered so far
+        # the cumulative height of the lines we've rendered so far
         y_offset = 0
+        line_number = 0
         for line in lines:
             fw, fh = self.font.size(line)
     
             # (tx, ty) is the top-left of the font surface
             tx = self.SCREEN_X_CENTER - fw / 2
-            ty = self.SCREEN_Y_CENTER + y_offset
-    
+            if line_number == 0:
+                line_number = 1
+                ty = self.SCREEN_Y_CENTER - ((len(lines)/2)*fh)
+            else:
+                ty += fh
+
             font_surface = self.font.render(line, True, (255, 255, 255))
             self.screen.blit(font_surface, (tx, ty))
-    
-            y_offset += fh
+
         pygame.display.flip()
         
     
@@ -345,7 +347,7 @@ class TloadPretest():
             time.sleep(0.1)
         
         self.render_centered_text("Well Done! Digits Training Complete")
-        time.sleep(2)
+        time.sleep(self.INFO_SLEEP)
         self.screen.fill((0, 0, 0))
     
     
@@ -371,7 +373,7 @@ class TloadPretest():
             
         self.render_centered_text("Well Done! Letter Training Complete")
         
-        time.sleep(2)
+        time.sleep(self.INFO_SLEEP)
         self.screen.fill((0, 0, 0))              
        
         
@@ -500,7 +502,6 @@ class TloadPretest():
                 ANSWER_NUMBER.append(int(RESPONSE_NUM))
                 
                 train_row = pd.DataFrame(columns=list(self.file_dict["Training"]["dataframe"].columns))
-                train_row.loc[0, "Subject"] = self.subject_info["subject"]
                 train_row.loc[0, "Subject_number"] = self.subject_info["subject_number"]
                 train_row.loc[0, "Age"] = self.subject_info["age"]
                 train_row.loc[0, "Sex"] = self.subject_info["sex"]
@@ -517,13 +518,13 @@ class TloadPretest():
            
             self.render_centered_text("The training will run again.")
             
-            time.sleep(2)
+            time.sleep(self.INFO_SLEEP)
             self.screen.fill((0, 0, 0))  
             self.render_centered_text("Press 'Y' to begin again.")
             
             break_time = True
             while break_time:
-                if keyboard.is_pressed("y"):  # space key pressed
+                if keyboard.is_pressed("y"):  # y key pressed
                     break_time = False
                     time.sleep(1)
                     self.screen.fill((0, 0, 0))  
@@ -543,9 +544,23 @@ class TloadPretest():
         None.
 
         """
-        self.render_centered_text("The real pretest will now begin!")
-        time.sleep(2)
+        self.render_centered_text("You have now reached the real pretest!")
+        time.sleep(self.INFO_SLEEP)
         self.screen.fill((0, 0, 0)) 
+        self.render_centered_text('')
+
+        self.render_centered_text("Take a break and wait until the test director gives further instruction before starting. Press 'Y' to begin once you are ready.")
+        break_time = True
+        while break_time:
+            if keyboard.is_pressed("y"):  # space key pressed
+                break_time = False
+                time.sleep(1)
+                self.screen.fill((0, 0, 0))  
+                self.render_centered_text('')
+                break  # finishing the loop
+            else:
+                continue
+            time.sleep(0.001)
         
         STD = self.subject_info["stimulus_time_duration_pretest"] - 0.1 # decreasing since they could handle 1.5
         
@@ -663,7 +678,6 @@ class TloadPretest():
                 ANSWER_NUMBER.append(int(RESPONSE_NUM))
                 
                 train_row = pd.DataFrame(columns=list(self.file_dict["Training"]["dataframe"].columns))
-                train_row.loc[0, "Subject"] = self.subject_info["subject"]
                 train_row.loc[0, "Subject_number"] = self.subject_info["subject_number"]
                 train_row.loc[0, "Age"] = self.subject_info["age"]
                 train_row.loc[0, "Sex"] = self.subject_info["sex"]
@@ -686,7 +700,7 @@ class TloadPretest():
                     # and set as HCL. This finishes the test.
                     self.screen.fill((0, 0, 0))  
                     self.render_centered_text("Congrats! The pretest is complete.")
-                    time.sleep(3)
+                    time.sleep(self.INFO_SLEEP)
                     self.screen.fill((0, 0, 0))  
                     self.render_centered_text("")
                     PRETEST_HCL = STD + 0.10
@@ -699,7 +713,7 @@ class TloadPretest():
                     # at the current value.
                     self.screen.fill((0, 0, 0))  
                     self.render_centered_text("Congrats! The pretest is complete.")
-                    time.sleep(3)
+                    time.sleep(self.INFO_SLEEP)
                     self.screen.fill((0, 0, 0))  
                     self.render_centered_text("")  
                     PRETEST_HCL = STD
@@ -708,12 +722,12 @@ class TloadPretest():
                 
                 self.screen.fill((0, 0, 0))  
                 self.render_centered_text("Let's take a break.")
-                time.sleep(2)
+                time.sleep(self.INFO_SLEEP)
                 self.screen.fill((0, 0, 0))  
                 self.render_centered_text("Press 'Y' to begin again when you're ready.")
                 break_time = True
                 while break_time:
-                    if keyboard.is_pressed("y"):  # space key pressed
+                    if keyboard.is_pressed("y"):  # y key pressed
                         break_time = False
                         time.sleep(1)
                         self.screen.fill((0, 0, 0))  
@@ -727,12 +741,12 @@ class TloadPretest():
                 STD = STD - 0.10
                 error = 0
                 self.render_centered_text("Let's take a break.")
-                time.sleep(2)
+                time.sleep(self.INFO_SLEEP)
                 self.screen.fill((0, 0, 0))  
                 self.render_centered_text("Press 'Y' to begin again when you're ready.")
                 break_time = True
                 while break_time:
-                    if keyboard.is_pressed("y"):  # space key pressed
+                    if keyboard.is_pressed("y"):  # y key pressed
                         break_time = False
                         time.sleep(1)
                         self.screen.fill((0, 0, 0))  
@@ -744,7 +758,6 @@ class TloadPretest():
                             
         
         pre_row = pd.DataFrame(columns=list(self.file_dict["Pretest"]["dataframe"].columns))
-        pre_row.loc[0, "Subject"] = self.subject_info["subject"]
         pre_row.loc[0, "Subject_number"] = self.subject_info["subject_number"]
         pre_row.loc[0, "Age"] = self.subject_info["age"]
         pre_row.loc[0, "Sex"] = self.subject_info["sex"]
@@ -755,15 +768,17 @@ class TloadPretest():
     def run_game(self):
         # Initializing the game parameters
         pygame.init()
+        self.INFO_SLEEP = 3
         w, h = pygame.display.Info().current_w, pygame.display.Info().current_h
-        self.font = pygame.font.Font(pygame.font.match_font('verdana'), 50)
+        self.width = w
+        self.font = pygame.font.Font(pygame.font.match_font('verdana'), 120)
         self.screen = pygame.display.set_mode(size=(w, h))
         self.SCREEN_X_CENTER, self.SCREEN_Y_CENTER = self.screen.get_rect().center
         
         
         text = "Let's Begin!"
         self.render_centered_text(text)
-        time.sleep(2)
+        time.sleep(self.INFO_SLEEP)
         self.screen.fill((0, 0, 0))
         
         self.display_one_instruction(r"images\pretest\General_Instructions_REMADE.bmp")
@@ -771,7 +786,7 @@ class TloadPretest():
         
         text = 'Digits Training is Beginning...'
         self.render_centered_text(text)
-        time.sleep(2)
+        time.sleep(self.INFO_SLEEP)
         self.screen.fill((0, 0, 0))
         self.digit_training()
         
@@ -780,7 +795,7 @@ class TloadPretest():
         
         text = 'Letters Training is Beginning...'
         self.render_centered_text(text)
-        time.sleep(2)
+        time.sleep(self.INFO_SLEEP)
         self.screen.fill((0, 0, 0))
         self.letter_training()
         
@@ -789,7 +804,7 @@ class TloadPretest():
         self.display_one_instruction(r"images\pretest\Letters_Digits_Instructions_REMADE.bmp")
         text = 'Letters and Digits Training is Beginning...'
         self.render_centered_text(text)
-        time.sleep(2)
+        time.sleep(self.INFO_SLEEP)
         self.screen.fill((0, 0, 0))
         self.learning_loop()
         self.pretest_loop()

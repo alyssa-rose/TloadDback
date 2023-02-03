@@ -1,0 +1,19 @@
+results/*
+
+#file types to ignore:
+*.pyc
+*__pycache__
+*.egg-info/
+*.xml
+*.iml
+*.code-workspace
+
+#Dev environment
+.vscode
+.idea
+.pytest_cache
+
+# Docker
+*.tar.gz
+*.tar
+

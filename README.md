@@ -7,18 +7,9 @@ The test is comprised on two parts: 1.) The pretest to individually calibrate hi
 
 
 ## Installation
-1. `git clone https://github.com/alyssa-rose/TloadDback.git`
-2. `cd TloadDback`
+1. `git clone https://gitlab-ee.aurora.aero/praca103/tloaddback.git`
+2. `cd tloaddback`
 3. `pip install -r requirements.txt` (this can and should be done within a virtual environment!)
-4. in `configs/test_settings.yaml` modify: 
-    * **subject**: Subjects identifier. If you do not wish to set it or do not have a separate identifier, set it equal to the subject_number in a string 
-                   format. **It cannot be empty and must be unique!**
-    * **subject_number**: Subject's number, must be unique to that subject. **It cannot be empty and must be unique!**
-    * **age**: Subject's age. May be obfuscated to protect identity. Age does not impact the results or test conditions. This value must be a positive integer. 
-    * **sex**: Either 'male' or 'female'
-    * **condition**: Either 'HCL' or 'LCL'. It must be one of these two, or the test will not run.
-    * **test_reps** [OPTIONAL]: How many times the test should be repeated. In Borragan et al. (2017), the test runs for 16 minutes. However, you may specify a 
-                                short or longer time, although it is not recommended. If utilized, this value must be a positive integer. If it remains  
-                                commented out, the test will run for 16 minutes [round(16/stimulus_time_duration)]
-5. run `python pygame_TloadDback_Training_Pretest.py` **Note that you should NOT use the mouse, or click on the game window as this might cause the game to crash**. To quit early, you may press **ESC** at any time. If you quit early, no results will be saved.
-6. run `python pygame_TloadDback.py` **Note that you should NOT use the mouse, or click on the game window as this might cause the game to crash**. To quit early, you may press **ESC** at any time. If you quit early, no results will be saved. If you attempt to run the test before the pretest, it will not work. `configs/test_settings.yaml` should NOT be modified in between running the pretest and the test.
+4. Refer to the PRETEST.md and TEST.md scripts under `scripts`, which provide context for the pretest and test, including how to run. The test director scripts without contextual information can be found under the files `scripts/<test type>_SCRIPT_ONLY.md`
+
+During the pretest and test, the only file that requires modification and manual input is `configs/test_settings.yaml`, in which subject identifier, age, sex, and test condition must be specified for that user. It is required that a mapping of subject name to subject identifier exists beforehand. The subject identifier ("subject_number" in the config file) MUST be unique to that individual, and should only contain letters and/or numbers.
